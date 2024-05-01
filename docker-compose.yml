@@ -2,17 +2,29 @@ version: '3'
 
 services:
   elasticsearch:
-    image: elasticsearch:${ELASTIC_VERSION}
+    image: elasticsearch:7.14.1
     container_name: elasticsearch
     restart: always
     environment:
       - discovery.type=single-node
       - xpack.security.http.ssl.enabled=false
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_PASSWORD="abc123456"
     ports:
       - 9200:9200
     volumes:
-      - ${LS6_ELASTICSEARCH_DATA_PATH}:/usr/share/elasticsearch/data
+      - ${ELASTICSEARCH_DATA_PATH}:/usr/share/elasticsearch/data
+
+  fscrawler:
+      image: dadoonet/fscrawler:2.7
+      container_name: fscrawler
+      restart: always
+      volumes:
+        - ${DATA_PATH}:/tmp/es:ro
+        - ./config:/root/.fscrawler
+        # - ./config:/usr/share/fscrawler/config
+      depends_on:
+        - elasticsearch
+      command: fscrawler idx --restart
 
 volumes:
   elasticsearch_data:

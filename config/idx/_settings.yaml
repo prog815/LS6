@@ -1,0 +1,51 @@
+---
+name: "idx"
+fs:
+  indexed_chars: 100%
+  lang_detect: true
+  continue_on_error: true
+  # ocr:
+  #   language: "eng"
+  #   enabled: true
+  #   pdf_strategy: "ocr_and_text"
+elasticsearch:
+  nodes:
+    - url: "http://elasticsearch:9200"
+  username: "elastic"
+  password: "abc123456"
+  ssl_verification: false
+  index: "idx"
+  type: "_doc"
+  settings:
+    index:
+      analysis:
+        filter:
+          russian_stemmer:
+            type: "stemmer"
+            language: "russian"
+        analyzer:
+          russian_analyzer:
+            type: "custom"
+            tokenizer: "standard"
+            filter: ["lowercase", "russian_stemmer"]
+  fields:
+    - name: "file"
+      index: false
+      store: true
+    - name: "content"
+      index: true
+      store: false
+      type: "text"
+      lang: "ru"
+      analyzer: "russian_analyzer"
+      search_analyzer: "russian_analyzer"
+  elasticsearch.mapping:
+    date_detection: false  
+    dynamic_templates:  
+      - strings:
+          mapping:
+            type: keyword
+            fields:
+              text:
+                type: text
+                analyzer: russian_analyzer
