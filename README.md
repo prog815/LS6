@@ -12,7 +12,8 @@ git clone https://github.com/prog815/LS6.git
 
 Скачайте необходимые Docker-образы и сохраните их в файлы:
 ```
-docker save opensearchproject/opensearch:2.3.0 > opensearch.tar
+docker save elasticsearch:7.14.1 > elasticsearch.tar
+docker save dadoonet/fscrawler:2.7 > fscrawler.tar
 ```
 ### Передача на сервер
 
@@ -22,10 +23,12 @@ docker save opensearchproject/opensearch:2.3.0 > opensearch.tar
 
 Установите Docker на сервере, если он еще не установлен.
 
-### Установите образы в хранилище
+### Добавьте образы в хранилище
 
 ```
-docker load < opensearch.tar
+docker load < elasticsearch.tar
+docker load < fscrawler.tar
+
 ```
 
 ### Переход к каталогу проекта
