@@ -1,18 +1,19 @@
 version: '3'
 
 services:
-  opensearch:
-    image: opensearchproject/opensearch:2.3.0
-    container_name: opensearch
+  elasticsearch:
+    image: elasticsearch:${ELASTIC_VERSION}
+    container_name: elasticsearch
+    restart: always
     environment:
       - discovery.type=single-node
-      - path.data=/app/data
+      - xpack.security.http.ssl.enabled=false
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - 9200:9200
     volumes:
-      - ${LS6_OPENSEARCH_DATA_PATH}:/app/data
+      - ${LS6_ELASTICSEARCH_DATA_PATH}:/usr/share/elasticsearch/data
 
 volumes:
-  opensearch_data:
+  elasticsearch_data:
     driver: local
