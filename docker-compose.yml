@@ -6,6 +6,13 @@ services:
     container_name: opensearch
     environment:
       - discovery.type=single-node
+      - path.data=/app/data
     ports:
       - "9200:9200"
       - "9300:9300"
+    volumes:
+      - ${LS6_OPENSEARCH_DATA_PATH}:/app/data
+
+volumes:
+  opensearch_data:
+    driver: local
