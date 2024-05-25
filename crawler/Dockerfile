@@ -5,7 +5,7 @@ FROM dadoonet/fscrawler:2.7
 WORKDIR /usr/share/fscrawler
 
 # Копируем конфигурационные файлы FScrawler в образ
-COPY idx /usr/share/fscrawler/idx
+COPY config /root/.fscrawler
 
 # Задаем команду запуска FScrawler
-CMD ["fscrawler", "idx"]
+CMD ["fscrawler", "idx", "--restart"]

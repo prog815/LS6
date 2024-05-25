@@ -19,10 +19,11 @@ services:
   fscrawler:
     image: ls6-fscrawler-image
     container_name: fscrawler
+    restart: always
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
-      - ${FILE_SCAN_DIR}:/tmp/es
+      - ${FILE_SCAN_DIR}:/tmp/es:ro
     depends_on:
       - elasticsearch
     networks:
