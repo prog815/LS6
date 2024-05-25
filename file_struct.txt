@@ -1,0 +1,18 @@
+Поисковик-6/
+├── crawler/
+│   ├── Dockerfile
+│   ├── idx/
+│   │   └── _settings.json
+├── database/
+│   ├── Dockerfile
+├── web/
+│   ├── Dockerfile
+│   ├── app.py
+│   ├── requirements.txt
+├── suggestions/
+│   ├── Dockerfile
+│   ├── suggestions.py
+│   ├── requirements.txt
+├── .env
+├── docker-compose.yml
+├── build.bat

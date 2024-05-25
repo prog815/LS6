@@ -1,53 +1,58 @@
-version: '3'
+version: '3.8'
 
 services:
   elasticsearch:
-    image: elasticsearch:7.14.1
+    image: ls6-elasticsearch-image
     container_name: elasticsearch
-    restart: always
     environment:
       - discovery.type=single-node
-      - xpack.security.http.ssl.enabled=false
-      - ELASTIC_PASSWORD="abc123456"
-    ports:
-      - 9200:9200
+      - path.data=/usr/share/elasticsearch/data
+      - path.logs=/usr/share/elasticsearch/logs
     volumes:
-      - ${ELASTICSEARCH_DATA_PATH}:/usr/share/elasticsearch/data
-
-  kibana:
-    image: kibana:7.14.1
-    container_name: kibana
-    depends_on:
-      - elasticsearch
-    restart: always
+      - ${ES_DATA_DIR}:/usr/share/elasticsearch/data
+      - ${ES_LOG_DIR}:/usr/share/elasticsearch/logs
     ports:
-      - 5601:5601
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD="abc123456"
+      - "9200:9200"
+    networks:
+      - ls6-network
 
   fscrawler:
-    image: dadoonet/fscrawler:2.7
+    image: ls6-fscrawler-image
     container_name: fscrawler
-    restart: always
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
-      - ${DATA_PATH}:/tmp/es:ro
-      - ./config:/root/.fscrawler
-      # - ./config:/usr/share/fscrawler/config
+      - ${FILE_SCAN_DIR}:/tmp/es
     depends_on:
       - elasticsearch
-    command: fscrawler idx --restart
+    networks:
+      - ls6-network
 
-  flask_app:
-    build: ./app
-    container_name: flask_app
-    restart: always
+  web:
+    image: ls6-web-image
+    container_name: web
+    environment:
+      - FLASK_ENV=development
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5000:5000"
     depends_on:
       - elasticsearch
+    networks:
+      - ls6-network
+
+  suggestions:
+    image: ls6-suggestions-image
+    container_name: suggestions
     ports:
-      - 5000:5000
+      - "5001:5000"
+    networks:
+      - ls6-network
 
 volumes:
-  elasticsearch_data:
-    driver: local
+  esdata:
+  eslogs:
+
+networks:
+  ls6-network:
+    driver: bridge
