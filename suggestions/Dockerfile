@@ -5,16 +5,13 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Копируем файл зависимостей в рабочую директорию
-COPY requirements.txt .
+COPY . .
 
 # Устанавливаем зависимости
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Копируем все файлы приложения в рабочую директорию
-COPY . .
 
 # Задаем переменную среды для указания порта, на котором будет работать Flask
 ENV PORT=5000
 
 # Указываем команду для запуска Flask-приложения
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["python", "suggestions.py"]
