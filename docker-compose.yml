@@ -28,16 +28,25 @@ services:
       - ELASTICSEARCH_PASSWORD="abc123456"
 
   fscrawler:
-      image: dadoonet/fscrawler:2.7
-      container_name: fscrawler
-      restart: always
-      volumes:
-        - ${DATA_PATH}:/tmp/es:ro
-        - ./config:/root/.fscrawler
-        # - ./config:/usr/share/fscrawler/config
-      depends_on:
-        - elasticsearch
-      command: fscrawler idx --restart
+    image: dadoonet/fscrawler:2.7
+    container_name: fscrawler
+    restart: always
+    volumes:
+      - ${DATA_PATH}:/tmp/es:ro
+      - ./config:/root/.fscrawler
+      # - ./config:/usr/share/fscrawler/config
+    depends_on:
+      - elasticsearch
+    command: fscrawler idx --restart
+
+  flask_app:
+    build: ./app
+    container_name: flask_app
+    restart: always
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5000:5000
 
 volumes:
   elasticsearch_data:
