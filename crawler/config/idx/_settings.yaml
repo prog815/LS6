@@ -3,6 +3,7 @@ name: "idx"
 fs:
   indexed_chars: 100000
   lang_detect: true
+  update_rate: "3h"
   continue_on_error: true
   # ocr:
   #   language: "eng"
