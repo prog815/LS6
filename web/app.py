@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from elasticsearch import Elasticsearch
 import logging
+from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -58,6 +59,20 @@ def count_pages(query, page_size=10):
 
     return total_pages
 
+def log_search_query(query, page_number, client_ip):
+    es = Elasticsearch([el_cnn], http_auth=(el_name, el_pass))
+
+    doc = {
+        'query': query,
+        'page_number': page_number,
+        'client_ip': client_ip,
+        'timestamp': datetime.now()
+    }
+
+    es.index(index='suggests', body=doc)
+    logger.info(f"Logged search query: {doc}")
+
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -72,12 +87,17 @@ def index():
 
         if page_number < 1 or page_number > total_pages:
             page_number = 1
+            
+        client_ip = request.remote_addr
 
         logger.info("search")
 
         results = search_in_elasticsearch(query, page=page_number, page_size=page_size)
 
         logger.info(len(results))
+        
+        # Log the search query
+        log_search_query(query, page_number, client_ip)
 
         return render_template('index.html', results=results, query=query, current_page=page_number, total_pages=total_pages)
     return render_template('index.html')

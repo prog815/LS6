@@ -11,8 +11,8 @@ services:
     volumes:
       - ${ES_DATA_DIR}:/usr/share/elasticsearch/data
       - ${ES_LOG_DIR}:/usr/share/elasticsearch/logs
-    ports:
-      - "9200:9200"
+    # ports:
+    #   - "9200:9200"
     networks:
       - ls6-network
 
