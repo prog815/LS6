@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск в локальной сети</title>
+    <style>
+        /* Стили для поля ввода */
+        input[type=text] {
+          width: 100%;
+          padding: 12px 20px;
+          margin: 8px 0;
+          box-sizing: border-box;
+          border: 2px solid #ccc;
+          border-radius: 4px;
+        }
+
+        /* Стили для кнопки поиска */
+        input[type=submit] {
+          width: 100%;
+          background-color: #4CAF50;
+          color: white;
+          padding: 14px 20px;
+          margin: 8px 0;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        /* Стили для контейнера */
+        .container {
+          border-radius: 5px;
+          background-color: #f2f2f2;
+          padding: 20px;
+        }
+
+        .highlight {
+            background-color: yellow;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h2>Поиск</h2>
+
+    <div class="container">
+        <form action="{{ url_for('index') }}" method="get">
+            <input type="text" class="search-input" name="query" placeholder="Введите поисковый запрос" value="{{ query }}">
+            <button class="search-button" type="submit">Поиск</button>
+        </form>
+    </div>
+
+    <p>Здесь результаты:</p>
+    {% for result in results %}
+        <div>
+            <h2><a href={{ url_for('static', filename='files/' + result._source.file.url[15:]) }} target=_blank download>{{ result._source.file.url[15:] }}</a></h2>
+            {% for cont in result.highlight.content %}
+                {% set new_cont = cont | replace('<em>', '<span class="highlight">') | replace('</em>', '</span>') %}
+                <p>- {{ new_cont | safe }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <!-- Добавление информации о страницах и ссылок для перехода между ними -->
+    <div>
+        {% if total_pages is defined and current_page is defined %}
+            {% set page_range = 3 %}  {# Укажите количество отображаемых соседних страниц #}
+
+            {% if total_pages > 1 %}
+                {% if current_page > 1 %}
+                    {% if current_page > page_range + 2 %}
+                        <a href="{{ url_for('index', page=1, query=query) }}">1</a>
+                        <span>...</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for page_num in range(current_page - page_range, current_page + page_range + 1) %}
+                    {% if page_num > 0 and page_num <= total_pages %}
+                        {% if page_num != current_page %}
+                            <a href="{{ url_for('index', page=page_num, query=query) }}">{{ page_num }}</a>
+                        {% else %}
+                            <strong>{{ page_num }}</strong>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if current_page < total_pages %}
+                    {% if current_page < total_pages - page_range - 1 %}
+                        <span>...</span>
+                        <a href="{{ url_for('index', page=total_pages, query=query) }}">{{ total_pages }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>

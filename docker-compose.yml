@@ -35,6 +35,8 @@ services:
     environment:
       - FLASK_ENV=development
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+    volumes:
+      - ${FILE_SCAN_DIR}:/app/static/files:ro
     ports:
       - "5000:5000"
     depends_on:
