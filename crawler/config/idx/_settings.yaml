@@ -1,7 +1,7 @@
 ---
 name: "idx"
 fs:
-  indexed_chars: 100%
+  indexed_chars: 100000
   lang_detect: true
   continue_on_error: true
   # ocr:
@@ -18,6 +18,7 @@ elasticsearch:
   type: "_doc"
   settings:
     index:
+      highlight.max_analyzed_offset: 2000000
       analysis:
         filter:
           russian_stemmer:
