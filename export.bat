@@ -15,8 +15,8 @@ docker save -o %PRODUCTION_DIR%\ls6-elasticsearch-image.tar ls6-elasticsearch-im
 echo Exporting web
 docker save -o %PRODUCTION_DIR%\ls6-web-image.tar ls6-web-image
 
-echo Exporting suggestions
-docker save -o %PRODUCTION_DIR%\ls6-suggestions-image.tar ls6-suggestions-image
+@REM echo Exporting suggestions
+@REM docker save -o %PRODUCTION_DIR%\ls6-suggestions-image.tar ls6-suggestions-image
 
 echo All images exported to %PRODUCTION_DIR% directory.
 

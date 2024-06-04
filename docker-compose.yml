@@ -44,13 +44,13 @@ services:
     networks:
       - ls6-network
 
-  suggestions:
-    image: ls6-suggestions-image
-    container_name: suggestions
-    ports:
-      - "5001:5000"
-    networks:
-      - ls6-network
+  # suggestions:
+  #   image: ls6-suggestions-image
+  #   container_name: suggestions
+  #   ports:
+  #     - "5001:5000"
+  #   networks:
+  #     - ls6-network
 
 volumes:
   esdata:

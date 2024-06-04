@@ -37,6 +37,24 @@
             background-color: yellow;
             font-style: italic;
         }
+
+        /* Стили подсказки */
+        .suggestions {
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none; /* Скрываем по умолчанию */
+        }
+        .suggestion {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .suggestion:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -45,7 +63,7 @@
     <div class="container">
         <form action="{{ url_for('index') }}" method="get">
             <input type="text" class="search-input" name="query" placeholder="Введите поисковый запрос" value="{{ query }}">
-            <button class="search-button" type="submit">Поиск</button>
+            <div class="suggestions"></div> <button class="search-button" type="submit">Поиск</button>
         </form>
     </div>
 
@@ -92,5 +110,42 @@
             {% endif %}
         {% endif %}
     </div>
+
+    <script>
+        const searchInput = document.querySelector('.search-input');
+        const suggestionsContainer = document.querySelector('.suggestions');
+
+        searchInput.addEventListener('input', async () => {
+            const query = searchInput.value.toLowerCase();
+            if (query.length > 0) {
+                suggestionsContainer.innerHTML = ''; // Очищаем предыдущие подсказки
+                try {
+                    const response = await fetch(`/suggestions?query=${query}`);
+                    const suggestions = await response.json();
+                    for (let i = 0; i < suggestions.length; i++) {
+                        const suggestion = document.createElement('div');
+                        suggestion.classList.add('suggestion');
+                        suggestion.textContent = suggestions[i];
+                        suggestion.addEventListener('click', () => {
+                            searchInput.value = suggestion.textContent; // Устанавливаем значение подсказки в поле ввода
+                            suggestionsContainer.style.display = 'none'; // Скрываем список подсказок
+                        });
+                        suggestionsContainer.appendChild(suggestion);
+                    }
+                    suggestionsContainer.style.display = 'block'; // Показываем список подсказок
+                } catch (error) {
+                    console.error('Ошибка при получении подсказок:', error);
+                }
+            } else {
+                suggestionsContainer.style.display = 'none'; // Скрываем список подсказок
+            }
+        });
+
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => { // Задержка для предотвращения скрытия подсказок при клике на них
+                suggestionsContainer.style.display = 'none';
+            }, 100);
+        });
+    </script>
 </body>
 </html>

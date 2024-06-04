@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from elasticsearch import Elasticsearch
 import logging
 from datetime import datetime
+from flask import jsonify
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -75,6 +76,8 @@ def log_search_query(query, page_number, client_ip):
 
 app = Flask(__name__)
 
+# --------------------------------------------------------------
+
 @app.route('/', methods=['GET'])
 def index():
     logger.info('home')
@@ -101,6 +104,19 @@ def index():
 
         return render_template('index.html', results=results, query=query, current_page=page_number, total_pages=total_pages)
     return render_template('index.html')
+
+# --------------------------------------------------------------
+
+@app.route('/suggestions', methods=['GET'])
+def suggestions():
+    query = request.args.get('query', default="", type=str)
+    suggested_terms = generate_suggestions(query)
+    return jsonify(suggested_terms)
+
+def generate_suggestions(query, num_suggestions=10):
+    """Генерирует список подсказок."""
+    suggestions = [query.lower()] * num_suggestions  # Предварительная реализация 
+    return suggestions
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
