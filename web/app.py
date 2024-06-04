@@ -116,6 +116,8 @@ def suggestions():
 def generate_suggestions(query, num_suggestions=10):
     """Генерирует список подсказок."""
     suggestions = [query.lower()] * num_suggestions  # Предварительная реализация 
+    for i in range(len(suggestions)):
+        suggestions[i] = f"{suggestions[i]} ({i+1})"
     return suggestions
 
 if __name__ == "__main__":
