@@ -4,6 +4,9 @@ from elasticsearch import Elasticsearch
 from datetime import datetime
 from flask import jsonify
 
+from gensim.models import Doc2Vec
+from gensim.models.doc2vec import TaggedDocument
+from nltk.tokenize import word_tokenize
 
 el_cnn = 'elasticsearch:9200'
 el_name = 'elastic'
@@ -22,6 +25,7 @@ with open('queries.txt', 'w') as f:
     for hit in results['hits']['hits']:
         f.write(f"{hit['_source']['query']}\n")
 print("Выгрузка запросов завершена.")
+
 
 # Обучение модели
 print("Обучение модели...")
