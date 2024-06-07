@@ -26,8 +26,17 @@ with open('queries.txt', 'w') as f:
         "size": 4000
     }
     results = es.search(index='suggests', body=query_body)
+    
+    unique_queries = set()
     for hit in results['hits']['hits']:
-        f.write(f"{hit['_source']['query']}\n")
+        query = hit['_source']['query'].strip().lower().replace('  ', ' ')
+        if query:  # проверяем, не пустая ли строка
+            unique_queries.add(query)
+
+    with open('queries.txt', 'w') as f:
+        for query in unique_queries:
+            f.write(f"{query}\n")
+            
 print("Выгрузка запросов завершена.")
 
 # Load the text file with queries
