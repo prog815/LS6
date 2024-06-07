@@ -128,31 +128,36 @@ def generate_suggestions(query, num_suggestions=10):
     
     global queries, model, last_update_time
     
-    # Проверка времени последнего обновления
-    if time.time() - last_update_time > 3600:
-        # Обновление списка запросов
-        queries = []
-        with open('queries.txt', 'r') as f:
-            queries = [line.strip() for line in f.readlines()]
+    try:
+        # Проверка времени последнего обновления
+        if time.time() - last_update_time > 3600:
+            # Обновление списка запросов
+            queries = []
+            with open('queries.txt', 'r') as f:
+                queries = [line.strip() for line in f.readlines()]
 
-        # Обновление модели
-        model = Doc2Vec.load('model.bin')
+            # Обновление модели
+            model = Doc2Vec.load('model.bin')
 
-        # Обновление времени последнего обновления
-        last_update_time = time.time()
+            # Обновление времени последнего обновления
+            last_update_time = time.time()
+        
+        # Токенизация запроса
+        query_tokens = word_tokenize(query.lower())
+        
+        # Вектор для запроса
+        query_vector = model.infer_vector(query_tokens)
+        
+        # Наиболее похожие фразы
+        similar_phrases = model.dv.most_similar([query_vector], topn=10)
+        
+        suggestions = [f"{queries[int(index)]}" for index, score in similar_phrases]
+        
+        return suggestions
     
-    # Токенизация запроса
-    query_tokens = word_tokenize(query.lower())
-    
-    # Вектор для запроса
-    query_vector = model.infer_vector(query_tokens)
-    
-    # Наиболее похожие фразы
-    similar_phrases = model.dv.most_similar([query_vector], topn=10)
-    
-    suggestions = [f"{queries[int(index)]}" for index, score in similar_phrases]
-    
-    return suggestions
+    except Exception as e:
+        print(f"Ошибка: {e}")
+        return []
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
