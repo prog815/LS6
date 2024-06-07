@@ -19,7 +19,11 @@ with open('queries.txt', 'w') as f:
     query_body = {
         "query": {
             "match_all": {}
-        }
+        },
+        "sort": {
+            "_id": "desc"
+        },
+        "size": 4000
     }
     results = es.search(index='suggests', body=query_body)
     for hit in results['hits']['hits']:
