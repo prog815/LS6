@@ -2,7 +2,11 @@ from flask import Flask, render_template, request
 from elasticsearch import Elasticsearch
 import logging
 from datetime import datetime
+import time
+import os
 from flask import jsonify
+from gensim.models import Doc2Vec
+from nltk.tokenize import word_tokenize
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -10,6 +14,10 @@ logger = logging.getLogger(__name__)
 el_cnn = 'elasticsearch:9200'
 el_name = 'elastic'
 el_pass = 'abc123456'
+
+queries = []
+model = None
+last_update_time = 0
 
 def search_in_elasticsearch(query, page=1, page_size=10):
     # Создайте подключение к Elasticsearch
@@ -114,10 +122,36 @@ def suggestions():
     return jsonify(suggested_terms)
 
 def generate_suggestions(query, num_suggestions=10):
-    """Генерирует список подсказок."""
-    suggestions = [query.lower()] * num_suggestions  # Предварительная реализация 
-    for i in range(len(suggestions)):
-        suggestions[i] = f"{suggestions[i]} ({i+1})"
+    """
+    Генерирует список подсказок.
+    """
+    
+    global queries, model, last_update_time
+    
+    # Проверка времени последнего обновления
+    if time.time() - last_update_time > 3600:
+        # Обновление списка запросов
+        queries = []
+        with open('queries.txt', 'r') as f:
+            queries = [line.strip() for line in f.readlines()]
+
+        # Обновление модели
+        model = Doc2Vec.load('model.bin')
+
+        # Обновление времени последнего обновления
+        last_update_time = time.time()
+    
+    # Токенизация запроса
+    query_tokens = word_tokenize(query.lower())
+    
+    # Вектор для запроса
+    query_vector = model.infer_vector(query_tokens)
+    
+    # Наиболее похожие фразы
+    similar_phrases = model.dv.most_similar([query_vector], topn=10)
+    
+    suggestions = [f"{queries[int(index)]}" for index, score in similar_phrases]
+    
     return suggestions
 
 if __name__ == "__main__":
