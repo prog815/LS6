@@ -143,7 +143,7 @@ def generate_suggestions(query, num_suggestions=10):
             last_update_time = time.time()
         
         # Токенизация запроса
-        query_tokens = word_tokenize(query.lower())
+        query_tokens = word_tokenize(query.lower().strip().replace('  ', ' '))
         
         # Вектор для запроса
         query_vector = model.infer_vector(query_tokens)
