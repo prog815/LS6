@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y cron
 ENV PORT=5000
 
 # Указываем команду для запуска скрипта обучения модели раз в день
-RUN echo "* * * * * cd /app && /usr/local/bin/python train_model.py 2>&1 > /app/train_model.log" | crontab -
+RUN echo "0 * * * * cd /app && /usr/local/bin/python train_model.py 2>&1 > /app/train_model.log" | crontab -
 
 # Указываем команду для запуска крона и Flask-приложения
 CMD cron && python app.py
