@@ -58,7 +58,7 @@ tagged_data = [TaggedDocument(words=words, tags=[str(i)]) for i, words in enumer
 # Обучение модели
 print("Обучение модели...")
 
-model = Doc2Vec(vector_size=100, window=5, min_count=1, workers=4, epochs=20)
+model = Doc2Vec(vector_size=20, window=5, min_count=1, workers=4, epochs=20)
 model.build_vocab(tagged_data)
 model.train(tagged_data, total_examples=model.corpus_count, epochs=model.epochs)
 model.save('model.bin')
