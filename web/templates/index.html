@@ -116,6 +116,7 @@
         const suggestionsContainer = document.querySelector('.suggestions');
 
         searchInput.addEventListener('input', async () => {
+            
             const query = searchInput.value.toLowerCase();
             if (query.length > 0) {
                 suggestionsContainer.innerHTML = ''; // Очищаем предыдущие подсказки
